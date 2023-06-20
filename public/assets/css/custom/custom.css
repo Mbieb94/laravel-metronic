@@ -1,0 +1,39 @@
+li.paginate_button {
+    z-index: 0;
+}
+
+/* html:not([data-theme=light]) .kt_app_content_dashboard {
+    background: url('.../../../../media/image/logo-danone-dark.png');
+    padding-top: 0;
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center;
+    height: 100%;
+}
+html:not([data-theme=dark]) .kt_app_content_dashboard {
+    background: url('.../../../../media/image/logo-danone-light.png');
+    padding-top: 0;
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center;
+    height: 100%;
+} */
+
+.thead-fix {
+    top: 0;
+}
+html:not([data-theme=light]) .thead-fix th{
+    background-color: #2b2b40;
+}
+
+html:not([data-theme=dark]) .thead-fix th{
+    background-color: #f6f8fa;
+}
+/* table.dataTable tbody tr>.dtfc-fixed-right {
+    z-index: 0;
+} */
+
+#kt_app_header {
+    background-color: var(--bs-app-header-minimize-bg-color);
+    backdrop-filter: blur(6px);
+}
