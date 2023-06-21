@@ -164,7 +164,7 @@
                                             </th>
                                             @foreach ($forms as $key => $items)
                                                 @if ($items['display'])
-                                                    <th class="text-nowrap">{{ $items['label'] == 'First Name' ? __('Author') : __($items['label']) }}</th>
+                                                    <th class="text-nowrap">{{ $items['label'] == 'Full Name' ? __('Author') : __($items['label']) }}</th>
                                                     @php
                                                         $column[] = ['data' => $items['name']];
                                                     @endphp

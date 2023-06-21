@@ -68,7 +68,7 @@ var KTDatatablesServerSide = function () {
                             ${row.photo}
                             <div class="d-flex justify-content-start flex-column">
                                 <a href="${firstSegment}/${row.id}" class="text-gray-800 fw-bold text-hover-primary mb-1 fs-6 text-nowrap">${row.fullname}</a>
-                                <span class="d-flex"><span class="text-gray-400 fw-semibold d-block fs-7 text-nowrap text-copy">${row.username}</span> &nbsp; &nbsp; <a class="copy cursor-pointer" data-bs-toggle="tooltip" data-bs-placement="right" title="Copy Text"><i class="fas fa-copy"></i></a></span>
+                                <span class="d-flex"><span class="text-gray-400 fw-semibold d-block fs-7 text-nowrap text-copy">${row.username}</span></span>
                             </div>
                         </div>
                         `;

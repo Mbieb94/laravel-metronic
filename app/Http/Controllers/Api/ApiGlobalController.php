@@ -61,10 +61,12 @@ class ApiGlobalController extends Controller
 
         if (count($reference) > 0) $model = $model->with($reference);
         
+        $total = $model->count();
+
         $model = $this->getSearch($model, $fields, $search);
         $model = $this->advanceSearch($model, $params);
 
-        $total = $model->count();
+        $totalFilterd = $model->count();
         $order = 'desc';
         if ($orderBy[0]['column']) {
             $order = $orderBy[0]['dir'];
@@ -100,7 +102,7 @@ class ApiGlobalController extends Controller
         $data = [
             'draw' => $draw,
             'recordsTotal' => $total,
-            'recordsFiltered' => $total,
+            'recordsFiltered' => $totalFilterd,
             'data' => $dataTable
         ];
 

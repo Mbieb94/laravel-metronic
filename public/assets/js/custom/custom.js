@@ -24,7 +24,7 @@ $(function () {
         "debug": false,
         "newestOnTop": false,
         "progressBar": false,
-        "positionClass": "toastr-top-right",
+        "positionClass": "toastr-bottom-right",
         "preventDuplicates": false,
         "onclick": null,
         "showDuration": "300",
@@ -38,7 +38,7 @@ $(function () {
     };
 
     if ($('body').attr('notification_success')) 
-        toastr.success($('body').attr('notification_message'), 'Success !');
+        toastr.success($('body').attr('notification_message'));
 
     if ($('body').attr('notification_warning'))
         toastr.warning($('body').attr('notification_message'), 'Warning!');
