@@ -138,4 +138,9 @@ $(function () {
 
         $(select).closest('.select-multiple').find('input[type=hidden]').val(JSON.stringify(data));
     });
+
+    $(document).on("click", "#kt_aside_mobile_toggle", function (e){
+        $("#kt_app_sidebar").removeClass("drawer-on");
+        $(".drawer-overlay").remove();
+    });
 });

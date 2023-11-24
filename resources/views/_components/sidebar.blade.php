@@ -25,6 +25,22 @@
                 
                 <div class="menu-item pt-5">
                     <div class="menu-content">
+                        <span class="menu-heading fw-bold text-uppercase fs-7">{{ __('PAGES') }}</span>
+                    </div>
+                </div>
+
+                <div class="menu-item" title="Data Master - Example" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-dismiss="click" data-bs-placement="right">
+                    <a href="{{ url('examples') }}" class="menu-link">
+                        <span class="menu-icon">
+                            <i class="ki-outline ki-user fs-2"></i>
+                        </span>
+                        <span class="menu-title">{{ __('Examples') }}</span>
+                        <span class="menu-arrow"></span>
+                    </a>
+                </div>
+
+                <div class="menu-item pt-5">
+                    <div class="menu-content">
                         <span class="menu-heading fw-bold text-uppercase fs-7">{{ __('USER MANAGEMENT') }}</span>
                     </div>
                 </div>
@@ -66,7 +82,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="menu-item pt-5">
                     <div class="menu-content">
                         <span class="menu-heading fw-bold text-uppercase fs-7">{{ __('PARAMETERS') }}</span>
