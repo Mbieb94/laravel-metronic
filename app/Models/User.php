@@ -24,7 +24,7 @@ class User extends Authenticatable
      */
     protected $table = 'users';
     protected $rules = [
-        'first_name' => ['required', 'string', 'max:255'],
+        'fullname' => ['required', 'string', 'max:255'],
         'username' => ['required', 'unique'],
         'email' => ['required', 'unique']
     ];
@@ -214,8 +214,10 @@ class User extends Authenticatable
 
     public function gender()
     {
+        // dd();
         return $this->belongsTo(Sysparams::class, 'gender', 'key')
             ->withTrashed()
+            // ->where('key', self::get()->first()->gender)
             ->where('groups', 'Gender');
     }
 

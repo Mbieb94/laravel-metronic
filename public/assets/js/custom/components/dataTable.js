@@ -3,6 +3,7 @@
 let columns = $("input[name='data-columns']").val();
 let datatableUrl = $("meta[name='datatable-url']").attr('content');
 let firstSegment = $("meta[name='first-segment']").attr('content');
+let segmentName = $("meta[name='first-segment']").attr('page-name');
 let firstSegmentApi = $("meta[name='first-segment-api']").attr('content');
 let isAllowToUpdate = $("meta[name='permission']").attr('update');
 let isAllowToTrash = $("meta[name='permission']").attr('trash');
@@ -137,13 +138,94 @@ var KTDatatablesServerSide = function () {
         };
 
         dt.on('draw', function () {
+            changeToCardList();
             initToggleToolbar();
             hardDelete();
             toggleToolbars();
             handleDeleteRows();
             handleRestoreRows();
+            handleCookies();
             KTMenu.createInstances();
         });
+    }
+
+    var changeToCardList = function () {
+        if(getCookie(segmentName) !== 'card') return false;
+
+        var data = dt.rows().data();
+
+        $("#card-list").remove();
+        let card = `<div class="row g-6 g-xl-9 mb-10" id="card-list">`;
+
+        if(data.length <= 0) {
+            card += `<div class="dataTables_empty text-center" style="left: 0px; position: sticky;">No data available in table</div>`;
+        }
+
+        data.each(function(dataRow){
+            var { id } = dataRow;
+            let listing = JSON.parse(columns);
+            let dataColumn = listing.slice(1, listing.length - 1);
+            
+            card += `<div class="col-md-6 col-xl-4">
+                <div class="card border-hover-primary">
+                    <div class="card-header border-0 pt-9">
+                        <div class="card-title m-0">
+                            
+                        </div>
+                        <div class="card-toolbar">
+                            <div class="me-0">
+                                <button class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-dismiss="click" data-bs-placement="left" data-bs-original-title="Click - Actions">
+                                    <i class="ki-solid ki-dots-horizontal fs-2x"></i>
+                                </button>
+                        
+                                <!--begin::Menu 3-->
+                                <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-200px py-3" data-kt-menu="true" style="">
+                                    <!--begin::Heading-->
+                                    <div class="menu-item px-3">
+                                        <div class="menu-content text-muted pb-2 px-3 fs-7 text-uppercase">
+                                            ACTIONS
+                                        </div>
+                                    </div>
+                                    <!--end::Heading-->
+
+                                    <!--begin::Menu item-->
+                                    <div class="menu-item px-3">
+                                        <a href="${firstSegment}/${id}/edit" class="menu-link px-3 d-flex">
+                                            <i class="fas fa-pencil me-3"></i> <span>Edit</span>
+                                        </a>
+                                    </div>
+                                    <!--end::Menu item-->
+                                    <!--begin::Menu item-->
+                                    <div class="menu-item px-3">
+                                        <a data-remote="${firstSegmentApi}/${id}/trash" href="javascript:;" class="menu-link px-3" data-kt-user-table-filter="delete_row">
+                                        <i class="fas fa-trash me-3"></i> <span>Delete</span>
+                                        </a>
+                                    </div>
+                                    <!--end::Menu item-->
+                                </div>
+                                <!--end::Menu 3-->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body p-9">`;
+                    
+                    for (let index = 0; index < dataColumn.length; index++) {
+                        const element = dataColumn[index].data;
+                        const label = element.replace(/_/g, ' ');
+                        card += `<div class="row mb-7">
+                            <label class="col-lg-5 fw-semibold text-muted">${ label.toUpperCase() }</label>
+                            <div class="col-lg-7">                    
+                                ${ dataRow[element] !== null ? dataRow[element] : '' }
+                            </div>
+                        </div>`;
+                    }
+            card+= `</div></div></div>`;
+        });
+
+        card += `</div>`;
+
+        $('#kt_datatable_example_1').hide();
+        $(card).insertAfter('#kt_datatable_example_1');
     }
 
     var handleSearchDatatable = function () {
@@ -174,11 +256,11 @@ var KTDatatablesServerSide = function () {
             d.addEventListener('click', function (e) {
                 e.preventDefault();
                 const url = $(this).data('remote');
-                const parent = e.target.closest('tr');
-                const customerName = parent.querySelectorAll('td')[1].innerText;
+                // const parent = e.target.closest('tr');
+                // const customerName = parent.querySelectorAll('td')[1].innerText;
 
                 Swal.fire({
-                    text: "Are you sure want to delete " + customerName + "?",
+                    text: "Are you sure want to delete this item ?",
                     icon: "warning",
                     showCancelButton: true,
                     buttonsStyling: false,
@@ -202,7 +284,7 @@ var KTDatatablesServerSide = function () {
                             success: function (resp) {
                                 console.log(resp)
                                 Swal.fire({
-                                    text: customerName + "Deleted",
+                                    text: "Item Deleted",
                                     icon: "success",
                                     buttonsStyling: false,
                                     confirmButtonText: "Yes",
@@ -219,7 +301,7 @@ var KTDatatablesServerSide = function () {
                         });
                     } else if (result.dismiss === 'cancel') {
                         Swal.fire({
-                            text: customerName + " Not Deleted.",
+                            text: "Item Not Deleted.",
                             icon: "error",
                             buttonsStyling: false,
                             confirmButtonText: "Yes",
@@ -548,6 +630,46 @@ var KTDatatablesServerSide = function () {
         });
     }
 
+    var handleCookies = function () {
+        $('.switcher').on('click', function (e) {
+            let cookieName = $(this).data('cookiename');
+            let cookieValue = $(this).data('switcher');
+            
+            setCookie('activepage', cookieName, 30);
+            setCookie(cookieName, cookieValue, 30);
+
+            $("#card-list").remove();
+            if(cookieValue == 'table') {
+                $('#kt_datatable_example_1').show();
+            }
+
+            dt.draw();
+        });
+    }
+
+    var setCookie = function (cname, cvalue, exdays) {
+        const d = new Date();
+        d.setTime(d.getTime() + (exdays*24*60*60*1000));
+        let expires = "expires="+ d.toUTCString();
+        document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+    }
+
+    var getCookie = function (cname) {
+        let name = cname + "=";
+        let decodedCookie = decodeURIComponent(document.cookie);
+        let ca = decodedCookie.split(';');
+        for(let i = 0; i <ca.length; i++) {
+          let c = ca[i];
+          while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+          }
+          if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+          }
+        }
+        return "";
+    }
+
     return {
         init: function () {
             initDatatable();
@@ -558,6 +680,7 @@ var KTDatatablesServerSide = function () {
             handleFilterDatatable();
             exportAll();
             hardDelete();
+            handleCookies();
         }
     }
 }();

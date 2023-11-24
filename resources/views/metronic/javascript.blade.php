@@ -4,9 +4,12 @@
 <script src="{{ asset('assets/plugins/custom/fullcalendar/fullcalendar.bundle.js') }}"></script>
 <script src="{{ asset('assets/plugins/custom/datatables/datatables.bundle.js') }}"></script>
 <script src="{{ asset('assets/js/widgets.bundle.js') }}"></script>
+<script src="{{ asset('assets/js/custom/widgets.js') }}"></script>
 <script src="{{ asset('assets/js/custom/components/datepicker.js') }}"></script>
 <script src="{{ asset('assets/js/custom/components/select2.js') }}"></script>
 <script src="{{ asset('assets/js/custom/components/thumbnail.js') }}"></script>
-<script src="{{ asset('assets/plugins/custom/tinymce/tinymce.bundle.js') }}"></script>
 <script src="{{ asset('assets/js/custom/global-variable.js') }}"></script>
 <script src="{{ asset('assets/js/custom/components/fileupload.js') }}"></script>
+{{-- <script src="{{ asset('assets/js/text-to-speech.js') }}"></script> --}}
+{{-- <script src="{{ asset('assets/js/custom/components/quil.js') }}"></script> --}}
+<script src="{{ asset('assets/js/custom/sidebar-menu.js') }}"></script>

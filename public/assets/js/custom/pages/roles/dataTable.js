@@ -129,17 +129,103 @@ var KTDatatablesServerSide = function () {
         table = dt.$;
 
         dt.on('draw', function () {
+            if(getCookie('datatable') == 'card') {
+                changeToCardList();
+            }
             initToggleToolbar();
             toggleToolbars();
             handleDeleteRows();
             handleRestoreRows();
+            handleCookies();
             KTMenu.createInstances();
         });
     }
 
+    var changeToCardList = function () {
+        // return false;
+        var data = dt.rows().data();
+        $("#card-list").remove();
+        let card = `<div class="row g-6 g-xl-9 mb-10" id="card-list">`;
+
+        data.each(function(dataRow){
+            const { id, get_users, name } = dataRow;
+
+            card += `<div class="col-md-6 col-xl-4">
+                <div class="card border-hover-primary">
+                    <div class="card-header border-0 pt-9">
+                        <div class="card-title m-0">
+                            <div class="symbol symbol-50px w-50px bg-light">
+                                <img src="assets/media/svg/brand-logos/plurk.svg" alt="image" class="p-3">
+                            </div>
+                        </div>
+                        <div class="card-toolbar">
+                            <div class="me-0">
+                                <button class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+                                    <i class="ki-solid ki-dots-horizontal fs-2x"></i>
+                                </button>
+                        
+                                <!--begin::Menu 3-->
+                                <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-200px py-3" data-kt-menu="true" style="">
+                                    <!--begin::Heading-->
+                                    <div class="menu-item px-3">
+                                        <div class="menu-content text-muted pb-2 px-3 fs-7 text-uppercase">
+                                            ACTIONS
+                                        </div>
+                                    </div>
+                                    <!--end::Heading-->
+
+                                    <!--begin::Menu item-->
+                                    <div class="menu-item px-3">
+                                        <a href="${firstSegment}/${id}/edit" class="menu-link px-3">
+                                            Edit
+                                        </a>
+                                    </div>
+                                    <!--end::Menu item-->
+                                    <!--begin::Menu item-->
+                                    <div class="menu-item px-3">
+                                        <a data-remote="${firstSegmentApi}/${id}/trash" href="javascript:;" class="menu-link px-3" data-kt-user-table-filter="delete_row">
+                                            Delete
+                                        </a>
+                                    </div>
+                                    <!--end::Menu item-->
+                                </div>
+                                <!--end::Menu 3-->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body p-9">
+                        <div class="fs-3 fw-bold text-dark text-uppercase">${ name }</div>
+                        <p class="text-gray-400 fw-semibold fs-5 mt-1 mb-7">CRM App application to HR efficiency</p>
+                        <div class="d-flex flex-wrap mb-5">
+                            <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-7 mb-3">
+                                <div class="fs-6 text-gray-800 fw-bold">Nov 10, 2023</div>
+                                <div class="fw-semibold text-gray-400">Due Date</div>
+                            </div>
+                            <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 mb-3">
+                                <div class="fs-6 text-gray-800 fw-bold">$284,900.00</div>
+                                <div class="fw-semibold text-gray-400">Budget</div>
+                            </div>
+                        </div>
+                        <div class="h-4px w-100 bg-light mb-5" data-bs-toggle="tooltip" aria-label="This project 50% completed" data-bs-original-title="This project 50% completed" data-kt-initialized="1">
+                            <div class="bg-primary rounded h-4px" role="progressbar" style="width: 50%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                        ${ get_users }
+                    </div>
+                </div>
+            </div>`;
+        });
+
+        card += `</div>`;
+
+        $('#kt_datatable_example_1').hide();
+        $(card).insertAfter('#kt_datatable_example_1');
+    } 
+
     var handleSearchDatatable = function () {
         const filterSearch = document.querySelector('[data-kt-user-table-filter="search"]');
         filterSearch.addEventListener('keyup', function (e) {
+            // let tables = $("#kt_datatable_example_1_wrapper").find('.table-responsive');
+            // if($(tables).hasClass('row g-6 g-xl-9')) $(tables).html(``);
             dt.search(e.target.value).draw();
         });
     }
@@ -152,10 +238,10 @@ var KTDatatablesServerSide = function () {
                 e.preventDefault();
                 const url = $(this).data('remote');
                 const parent = e.target.closest('tr');
-                const customerName = parent.querySelectorAll('td')[1].innerText;
+                // const customerName = parent.querySelectorAll('td')[1].innerText;
 
                 Swal.fire({
-                    text: "Are you sure want to delete " + customerName + "?",
+                    text: "Are you sure want to delete this data ?",
                     icon: "warning",
                     showCancelButton: true,
                     buttonsStyling: false,
@@ -179,7 +265,7 @@ var KTDatatablesServerSide = function () {
                             success: function (resp) {
                                 console.log(resp)
                                 Swal.fire({
-                                    text: customerName + "Deleted",
+                                    text: "Data Deleted",
                                     icon: "success",
                                     buttonsStyling: false,
                                     confirmButtonText: "Yes",
@@ -196,7 +282,7 @@ var KTDatatablesServerSide = function () {
                         });
                     } else if (result.dismiss === 'cancel') {
                         Swal.fire({
-                            text: customerName + " Not Deleted.",
+                            text: "Data is not Deleted.",
                             icon: "error",
                             buttonsStyling: false,
                             confirmButtonText: "Yes",
@@ -388,6 +474,56 @@ var KTDatatablesServerSide = function () {
         }
     }
 
+    var handleCookies = function () {
+        $('.switcher').on('click', function (e) {
+            let cookieName = $(this).data('switcher');
+            
+            setCookie('datatable', cookieName, 30);
+
+            $("#card-list").remove();
+            if(cookieName == 'table') {
+                $('#kt_datatable_example_1').show();
+            }
+
+            dt.draw();
+        });
+    }
+
+    var setCookie = function (cname, cvalue, exdays) {
+        const d = new Date();
+        d.setTime(d.getTime() + (exdays*24*60*60*1000));
+        let expires = "expires="+ d.toUTCString();
+        document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+    }
+
+    var getCookie = function (cname) {
+        let name = cname + "=";
+        let decodedCookie = decodeURIComponent(document.cookie);
+        let ca = decodedCookie.split(';');
+        for(let i = 0; i <ca.length; i++) {
+          let c = ca[i];
+          while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+          }
+          if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+          }
+        }
+        return "";
+    }
+
+    var checkCookie = function (cookieName) {
+        let cookie = getCookie(cookieName);
+        if (cookie != "") {
+            alert("Welcome again " + cookie);
+        } else {
+            cookie = prompt("Please enter your name:", "");
+            if (cookie != "" && cookie != null) {
+                setCookie(cookieName, cookie, 365);
+            }
+        }
+    }
+
     return {
         init: function () {
             initDatatable();
@@ -395,6 +531,7 @@ var KTDatatablesServerSide = function () {
             initToggleToolbar();
             handleDeleteRows();
             handleRestoreRows();
+            handleCookies();
         }
     }
 }();

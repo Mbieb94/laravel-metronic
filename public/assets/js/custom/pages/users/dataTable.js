@@ -104,14 +104,7 @@ var KTDatatablesServerSide = function () {
                     orderable: false,
                     render: function (data) {
                         if(data === null) return '';
-                        let today = new Date();
-                        let date = new Date(data.created_at);
-                        let timeDiff = Math.abs(today.getTime() - date.getTime());
-                        let daysCount = Math.ceil(timeDiff / (1000 * 3600 * 24));
-                        
-                        let color = 'info';
-                        if(daysCount > 30) color = 'red';
-                        return `<span class="badge py-3 px-4 fs-7 badge-light-${color}">${date.toString().split(' GMT')[0]}</span>`;
+                        return updateDate(data.created_at);
                     }
                 },
                 {
@@ -203,15 +196,113 @@ var KTDatatablesServerSide = function () {
                 text: message
             });
         };
-        // Re-init functions on every table re-draw -- more info: https://datatables.net/reference/event/draw
+        
         dt.on('draw', function () {
+            changeToCardList();
             initToggleToolbar();
             toggleToolbars();
             handleDeleteRows();
             handleActivationUser();
             handleNotActiveUser();
+            handleCookies();
             KTMenu.createInstances();
         });
+    }
+
+    var changeToCardList = function () {
+        if(getCookie('datatable_user') !== 'card') return false;
+
+        var data = dt.rows().data();
+
+        $("#card-list").remove();
+        let card = `<div class="row g-6 g-xl-9 mb-10" id="card-list">`;
+
+        if(data.length <= 0) {
+            card += `<div class="dataTables_empty text-center" style="left: 0px; position: sticky;">No data available in table</div>`;
+        }
+
+        data.each(function(dataRow){
+            var { id, photo, fullname, email } = dataRow;
+            dataRow.last_login = dataRow.last_login?.created_at ? updateDate(dataRow.last_login.created_at) : '';
+            let listing = JSON.parse(columns);
+            let dataColumn = listing.slice(1, listing.length - 1);
+            
+            card += `<div class="col-md-6 col-xl-4">
+                <div class="card border-hover-primary">
+                    <div class="card-header border-0 pt-9">
+                        <div class="card-title m-0">
+                            ${ photo }
+                            <div class="d-flex justify-content-start flex-column">
+                                <a href="${firstSegment}/${id}" class="text-gray-800 fw-bold text-hover-primary mb-1 fs-6 text-nowrap" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-dismiss="click" data-bs-placement="bottom" data-bs-original-title="Click - User Detail">${ fullname }</a>
+                                <span class="d-flex"><span class="text-gray-400 fw-semibold d-block fs-7 text-nowrap">${ email }</span></span>
+                            </div>
+                        </div>
+                        <div class="card-toolbar">
+                            <div class="me-0">
+                                <button class="btn btn-sm btn-icon btn-bg-light btn-active-color-primary" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-dismiss="click" data-bs-placement="left" data-bs-original-title="Click - Actions">
+                                    <i class="ki-solid ki-dots-horizontal fs-2x"></i>
+                                </button>
+                        
+                                <!--begin::Menu 3-->
+                                <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold w-200px py-3" data-kt-menu="true" style="">
+                                    <!--begin::Heading-->
+                                    <div class="menu-item px-3">
+                                        <div class="menu-content text-muted pb-2 px-3 fs-7 text-uppercase">
+                                            ACTIONS
+                                        </div>
+                                    </div>
+                                    <!--end::Heading-->
+
+                                    <!--begin::Menu item-->
+                                    <div class="menu-item px-3">
+                                        <a href="${firstSegment}/${id}/edit" class="menu-link px-3 d-flex">
+                                            <i class="fas fa-pencil me-3"></i> <span>Edit</span>
+                                        </a>
+                                    </div>
+                                    <!--end::Menu item-->
+                                    <!--begin::Menu item-->
+                                    <div class="menu-item px-3">
+                                        <a data-remote="${firstSegmentApi}/${id}/trash" href="javascript:;" class="menu-link px-3" data-kt-user-table-filter="delete_row">
+                                        <i class="fas fa-trash me-3"></i> <span>Delete</span>
+                                        </a>
+                                    </div>
+                                    <!--end::Menu item-->
+                                </div>
+                                <!--end::Menu 3-->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body p-9">`;
+                    
+                    for (let index = 0; index < dataColumn.length; index++) {
+                        const element = dataColumn[index].data;
+                        const label = element.replace(/_/g, ' ');
+                        card += `<div class="row mb-7">
+                            <label class="col-lg-5 fw-semibold text-muted">${ label.toUpperCase() }</label>
+                            <div class="col-lg-7">                    
+                                ${ dataRow[element] }
+                            </div>
+                        </div>`;
+                    }
+            card+= `</div></div></div>`;
+        });
+
+        card += `</div>`;
+
+        $('#kt_datatable_example_1').hide();
+        $(card).insertAfter('#kt_datatable_example_1');
+    }
+
+    var updateDate = function (dateString) {
+        if(dateString === null) return '';
+        let today = new Date();
+        let date = new Date(dateString);
+        let timeDiff = Math.abs(today.getTime() - date.getTime());
+        let daysCount = Math.ceil(timeDiff / (1000 * 3600 * 24));
+        
+        let color = 'info';
+        if(daysCount > 30) color = 'red';
+        return `<span class="badge py-3 px-4 fs-7 badge-light-${color}">${date.toString().split(' GMT')[0]}</span>`;
     }
 
     // Search Datatable --- official docs reference: https://datatables.net/reference/api/search()
@@ -242,8 +333,8 @@ var KTDatatablesServerSide = function () {
             d.addEventListener('click', function (e) {
                 e.preventDefault();
                 const url = $(this).data('remote');
-                const parent = e.target.closest('tr');
-                const customerName = parent.querySelectorAll('td')[1].innerText;
+                // const parent = e.target.closest('tr');
+                // const customerName = parent.querySelectorAll('td')[1].innerText;
 
                 Swal.fire({
                     text: "Are you sure want to delete this row ?",
@@ -545,6 +636,44 @@ var KTDatatablesServerSide = function () {
         }
     }
 
+    var handleCookies = function () {
+        $('.switcher').on('click', function (e) {
+            let cookieName = $(this).data('switcher');
+            
+            setCookie('datatable_user', cookieName, 30);
+
+            $("#card-list").remove();
+            if(cookieName == 'table') {
+                $('#kt_datatable_example_1').show();
+            }
+
+            dt.draw();
+        });
+    }
+
+    var setCookie = function (cname, cvalue, exdays) {
+        const d = new Date();
+        d.setTime(d.getTime() + (exdays*24*60*60*1000));
+        let expires = "expires="+ d.toUTCString();
+        document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+    }
+
+    var getCookie = function (cname) {
+        let name = cname + "=";
+        let decodedCookie = decodeURIComponent(document.cookie);
+        let ca = decodedCookie.split(';');
+        for(let i = 0; i <ca.length; i++) {
+          let c = ca[i];
+          while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+          }
+          if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+          }
+        }
+        return "";
+    }
+
     // Public methods
     return {
         init: function () {
@@ -556,6 +685,7 @@ var KTDatatablesServerSide = function () {
             handleActivationUser();
             handleNotActiveUser();
             handleResetForm();
+            handleCookies();
         }
     }
 }();

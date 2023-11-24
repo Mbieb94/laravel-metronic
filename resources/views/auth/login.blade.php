@@ -5,7 +5,7 @@
     <title>Login Page</title>
     <meta charset="utf-8" />
     <link rel="shortcut icon" href="{{ asset('assets/media/logos/favicon.ico') }}" />
-
+    <meta name="language" content="{{ App::getLocale() == 'id' ? 'id-ID' : 'en-US' }}">
     @include('metronic/css')
 
     <script src="{{ asset('assets/js/custom/theme-handler.js') }}"></script>
@@ -28,7 +28,7 @@
                 <div class="d-flex flex-column flex-center pb-0 pb-lg-10 p-10 w-100">
                     <img class="theme-light-show mx-auto mw-100 w-150px w-lg-300px mb-10 mb-lg-20" src="assets/media/auth/agency.png" alt="" />
                     <img class="theme-dark-show mx-auto mw-100 w-150px w-lg-300px mb-10 mb-lg-20" src="assets/media/auth/agency-dark.png" alt="" />
-                    <h1 class="text-gray-800 fs-2qx fw-bold text-center mb-7">Fast, Efficient and Productive</h1>
+                    <h1 class="text-gray-800 fs-2qx fw-bold text-center mb-7 speech-text">Fast, Efficient and Productive</h1>
                     <div class="text-gray-600 fs-base text-center fw-semibold">In this kind of post,
                     <a href="#" class="opacity-75-hover text-primary me-1">the blogger</a>introduces a person they’ve interviewed
                     <br />and provides some background information about
@@ -47,8 +47,8 @@
                                 @method('POST')
                                 @csrf
                                 <div class="text-center mb-11">
-                                    <h1 class="mb-3 text-dark fw-bolder">Sign In</h1>
-                                    <div class="text-gray-500 fw-semibold fs-6">Please enter your username and password</div>
+                                    <h1 class="mb-3 text-dark fw-bolder speech-text">Sign In</h1>
+                                    <div class="text-gray-500 fw-semibold fs-6 speech-text" id="speech-text">Saya adalah manusia robot</div>
                                 </div>
                                 <div class="mb-5 fv-row form-floating">
                                     <input type="text" placeholder="login" name="login" autocomplete="off"

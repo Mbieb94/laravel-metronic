@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Library\Component;
+use App\Library\Operator;
 use App\Models\Files;
 use App\Models\Resources;
 use Exception;
@@ -138,15 +139,8 @@ class ApiGlobalController extends Controller
                 continue;
             }
 
-            switch ($operator[1]) {
-                case 'in':
-                    $model = $model->whereIn($operator[0], json_decode($item['value'], true));
-                    break;
-                
-                default:
-                    $model = $model->where($operator[0], $item['value']);
-                    break;
-            }
+            $opFunc = $operator[1];
+            $model = Operator::$opFunc($model, $operator[0], $item['value']);
         }
 
         return $model;

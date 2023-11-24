@@ -23,6 +23,18 @@ Route::controller(AuthControler::class)->prefix(env('API_VERSION', 'v1'))->group
     Route::post('/login', 'login')->name('auth.login');
 });
 
+Route::get('test_api', function (){
+    $data = [
+        [
+            'title' => 'Test',
+            'userId' => 1,
+            'username' => 'Anu Gemes',
+        ]
+    ];
+
+    return response($data);
+});
+
 
 Route::middleware(['auth:sanctum'])->prefix(env('API_VERSION', 'v1'))->group(function () {
     Route::controller(AuthControler::class)->group(function () {

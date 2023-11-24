@@ -61,14 +61,12 @@ class UserController extends Controller
     public function create()
     {
         $roles = Roles::get();
-        $costCentre = CostCentres::get();
         $this->view = view('backend.users.create');
 
         return $this->view->with(
             [
                 'forms' => $this->forms,
                 'roles' => $roles,
-                'costCentre' => $costCentre,
             ]
         );
     }

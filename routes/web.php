@@ -4,18 +4,14 @@ use App\Http\Controllers\AppController;
 use App\Http\Controllers\ArtisanController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LanguageController;
-use App\Http\Controllers\ModalController;
-use App\Http\Controllers\QrController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VocabulariesController;
-use App\Http\Controllers\ImportExcelController;
-use App\Http\Controllers\MasterAssetController;
-use App\Http\Controllers\ToolsController;
 use Illuminate\Support\Facades\Route;
 
 require __DIR__ . '/auth.php';
 require __DIR__ . '/api.php';
+require __DIR__ . '/pages.php';
 
 Route::get('/', function () {
     if (auth()->user()) return view('dashboard');

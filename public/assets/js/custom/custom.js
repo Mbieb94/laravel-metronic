@@ -1,5 +1,9 @@
 $(function () {
-    $(".app-page-loader").fadeOut('slow', function () {
+    $(".app-page-loader-bo").fadeOut('slow', function () {
+        $(this).removeClass("d-block");
+    });
+
+    $(".app-page-loader-web").slideUp('slow', function () {
         $(this).removeClass("d-block");
     });
 

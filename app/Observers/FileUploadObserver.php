@@ -22,8 +22,7 @@ class FileUploadObserver
     {
         if (request()->file()) {
             foreach (request()->file() as $key => $file) {
-                $desc = $key . '_desc';
-                $resources->$key = $this->writeFile($file, request()->$desc);
+                $resources->$key = $this->writeFile($file);
             }
         }
 
@@ -43,21 +42,20 @@ class FileUploadObserver
 
     public function saved(Resources $resources)
     {
-        $fileList = $resources->getFilesList();
-        if (!$this->isNew && $fileList) {
-            for ($i = 0; $i < count($fileList); $i++) {
-                $name = $fileList[$i] . '_desc';
-                $this->updateFileDescription(request()->$name, $resources->file);
-            }
-        }
+        // $fileList = $resources->getFilesList();
+        // if (!$this->isNew && $fileList) {
+        //     for ($i = 0; $i < count($fileList); $i++) {
+        //         $name = $fileList[$i] . '_desc';
+        //         $this->updateFileDescription(request()->$name, $resources->file);
+        //     }
+        // }
     }
 
     public function updating(Resources $resources)
     {
         if (request()->file()) {
             foreach (request()->file() as $key => $file) {
-                $desc = $key . '_desc';
-                $resources->$key = $this->writeFile($file, request()->$desc);
+                $resources->$key = $this->writeFile($file);
             }
         }
     }
@@ -74,7 +72,7 @@ class FileUploadObserver
         }
     }
 
-    public function writeFile($file, $desc)
+    public function writeFile($file, $desc = null)
     {
         $code = Str::random(15);
         $directory = public_path('storage/image/origin');
@@ -84,7 +82,7 @@ class FileUploadObserver
         }
 
         $ext = $file->getClientOriginalExtension();
-        $name = time() . '_org.' . $ext;
+        $name = $code . '_org.' . $ext;
         $path = $directory . '/' . $name;
         $uploadFile = Image::make($file->getRealPath());
         $uploadFile->save($path);

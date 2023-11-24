@@ -11,7 +11,3 @@
     </small>
     @endif
 </div>
-
-@section('customjs')
-<script src="{{ asset('assets/js/custom/components/quil.js') }}"></script>
-@endsection
